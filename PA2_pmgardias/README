@@ -1,0 +1,145 @@
+README.txt -- Przemek Gardias (pmgardias)
+
+For use with PA2_pmgardias (Game of Life).
+
+	Description:
+The program plays the Game of Life with standard rules, but does not loop the edge of 
+the board over so cells which are at the rightmost column of the board do not take into 
+account cells on the leftmost column of the board as their neighbors. 
+
+	Running:
+To compile and run the program, run "./life X Y gens input print pause" out of the 
+folder in which the contents of the zip file are extracted to. 
+
+	Parameters:
+Acceptable input for each parameter is based upon what they are used for. X & Y: 
+indicate number of the number of elements in the x and y directions if the grid, 
+respectively. gens: number inficating the maximum number of generations (iterations of 
+the game board). input: name of the file from which the initial generation configuration 
+is pulled from. The content of the input file should consist solely of 'x', 'o', '\n' 
+and EOF characters, otherwise errors will be produced. print & pause: 'y' or 'n', 
+indicating yes or no, respectively. If print is 'y', then the program will print the 
+board after each generation, if it is 'n', then it will not.If pause is 'y', the program 
+will pause before printing the next generation and prompt the user to hit the enter key 
+in order to progress to the next generation.
+
+	Experience:
+The process through which I center the content of the input file could be much better, 
+as using the length of the first line of input before encountering a newline character 
+to center the board can easily cause errors if any of the other lines of input are 
+excessively long and will cause issues with the array bounds. To fix this, I could store 
+the length of each line of input from the file and use the longest length to center the 
+input. 
+**IMPORTANT** Because of the previous reason, some configurations of the input 
+file will cause the program to crash. In addition to this, because the array to which 
+the content of the input file is passed is intialized with size 250, the program will 
+not run correctly if the board state, (x * y) > 250, and even at smaller values because 
+the newline character is also passed to this array.
+
+
+	Loops:
+	**Each loop has an in-depth explanation of its function and process in the code.**
+in source file life.c:
+in function main:
+
+for (int i = 0; i < rows; i++)
+Used to allocate memory to each array which is held in A[] in order to allocate memory 
+to all cells of the board. 
+The invariant for this loop is i < rows, and i is incremented once per loop so that it 
+runs through the entire content of A[] and allocates memory for each internal array.
+
+while (fscanf(input, "%c", &stream) == 1)
+Used to count the number of rows and columns of the content of the input file to
+later determine how to center the input when passed to the intial generation array, A.
+The invariant for this loop is the state of the fscanf() strean from the input file. 
+When EOF is reached, the loop terminates. However, until it is reached, the content of 
+the input file is passed to the array inputText and centerRowCount and centerColCount, 
+which keep track of the number of rows and columns in the input file are incremented 
+accordingly.
+
+for (int f = ((rows - centerRowCount) / 2); f < rows; f++)
+	for (int g = ((cols - centerColCount) / 2); g < cols; g++)
+The nested for loops are used to pass the content of the inputText array to the array A, 
+while also centering the input content. The invariant for each of these for loops is 
+f < rows and g < cols, and each of these values are incremented a single time per loop. 
+The loop itself works very similarly to the previous while loop, but also includes if 
+statements which check boundary conditions to prevent errors. There is also an if 
+statement which checks for invalid characters found within the input file.
+
+in source file game.c:
+in function compareArrays:
+
+for (int i = 0; i < rows; i++)
+	for (int j = 0; j < cols; j++)
+The nested for loops simply iterate through every element of the two arrays which are 
+passed into the function and compare the contents of the two arrays. The invariants for 
+these two loops are i < rows and j < cols. Both i and j increment once per loop.
+
+in function isDead:
+
+for (int i = 0; i < rows; i++)
+	for (int j = 0; j < cols; j++)
+The nested for loops are identical to the previous ones, and serve the same purpose, to 
+loop through the entirety of the passed array. However, this time, they are used to 
+determine whether the passed array is fully dead. The invariants for these two loops 
+are i < rows and j < cols. Both i and j increment once per loop.
+
+in function printBoard:
+
+for (int i = 0; i < rows; i++)
+	for (int j = 0; j < cols; j++)
+The nested for loops are identical to the previous two, and serve the same purpose. The 
+content of each cell is used to determine what character to print to the console. The 
+invariants for these two loops are i < rows and j < cols. Both i and j increment once 
+per loop.
+
+in function PlayOne:
+
+for (int i = 0; i < rows; i++)
+This for loop is used twice in a row and is the exact same loop that exists in main, 
+and is used to allocate memory to all of the arrays found inside of the arrays C and 
+neighborCount. The invariant for this loop is i < rows, with i being incremented once 
+a loop.
+
+for (int i = 0; i < rows; i++)
+	for (int j = 0; j < cols; j++)
+The nested for loops are identical to the ones mentioned before in this readme, and are 
+used to intialize the board states of the two arrays which just had memory allocated to 
+them. The invariants for these two loops are i < rows and j < cols. Both i and j 
+increment once per loop.
+
+for (int i = 0; i < rows; i++)
+	for (int j = 0; j < cols; j++)
+The nested for loops are identical to the previous one, but are instead used to check 
+the state of every cell in the previous generation and update the number of neighbors 
+of every cell to then use that count of neighbors in updating the state of the board 
+for the next generation. The invariants for these two loops are i < rows and 
+j < cols. Both i and j increment once per loop.
+
+for (int i = 0; i < rows; i++)
+	for (int j = 0; j < cols; j++)
+The nested for loops are identical to the previous two, however, they are used to call 
+the function updateCell and pass the state of the cell currently as well as the cell's 
+number of neighbors as parameters to determine the next state of the given cell. The 
+invariants for these two loops are i < rows and j < cols. Both i and j increment once 
+per loop.
+
+for (int i = 0; i < rows; i++)
+The for loop is used to free the memory for every internal array of neighborCount before 
+freeing the memory of neighborCount itself. The invariant for this loop is i < rows, 
+with i being incremented once a loop.
+
+Borrowed code:
+I took the code which was given in the assignment document file that can be found on 
+Canvas. This code includes the process of allocating memory to a 2-D array, which can 
+be found three times in the source code, once in life.c and twice in game.c. The other 
+code which I borrowed was the process of passing parameters from the command line to 
+the program. 
+
+Example input files:
+The example input files which I submitted with my project consist of patterns which I 
+copied off of Wikipedia: 
+https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life#Examples_of_patterns
+These files, named input and input2 contain oscillating and non-oscillating patterns. 
+Specifically, input contains a "turtle" and a "tub", and input2 contains a beacon and a 
+glider.

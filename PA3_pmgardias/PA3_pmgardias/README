@@ -1,0 +1,66 @@
+README.txt -- Przemek Gardias (pmgardias)
+
+For use with PA3_pmgardias (Binary Trees in C)
+
+	Description:
+The program goes through multiple input files and creates a binary tree out of 
+the content of the input files. It then prints the results to an ouput file, 
+which is passed by the user as a parameter.
+
+	Running:
+To compile and run the program, run "./tree ouput.txt input1.txt input2.txt 
+..." out of the folder in which the contents of the zip file are extracted to.
+
+	Parameters:
+output.txt: name of the ouput file which the results of the program are 
+printed to. input1.txt, input2.txt: any number of input text files consisting 
+of only standard ASCII characters passed as the rest of the arguments.
+
+	Experience:
+I had many problems troubleshooting segmentation fault errors which occured in 
+function calls of functions from imported libraries, such as the function 
+fscanf(). I used the gdb debugging tool to attempt to solve these issues, as 
+the eclipse debugger was unable to provide useful information past the file 
+in which the function was pulled from. Apart from troubleshooting, I also had 
+trouble with passing pointers to the input file streams to a seperate function 
+which I would use to handle looping through each file and adding each word to 
+the binary tree. Instead, I left this process inside main().
+
+	Loops:
+	**Each loop has an in-depth explanation of its function and process in the 
+	code.**
+in source file tree.c:
+in function main:
+
+for (int i = 0; i < argc - 2; i++)
+Filling the array of pointers, input[] with streams to each input file. The 
+invariant for this loop is i < argc - 2, and i is incremented once per loop. 
+The reason that i is initialized with value i = 0 is because the value that is 
+used when opening the streams to each of the input files, argv[i + 2] is used 
+instead of argv[i].
+
+for (int j = 0; j < argc - 2; j++)
+	while (fscanf(input[j], "%s", word) == 1)
+The for loop is used to loop through each element of the previous defined 
+array of pointers to input file streams in order to then use the while loop to 
+read the contents of each file. The invariant of the for loop is j < argc - 2 
+and j is incremented once per loop, just like the previous for loop. The while 
+loop continues to repeat until the EOF of input[j] is reached, in which case 
+fscanf() will not be equal to 1. When the while loop ends, the next input file 
+stream will be opened to read the content of the next file.
+
+for (int k = 0; k < argc - 2; k++)
+This loop is simply used to free the memory from each index of the array 
+input[] which was created and filled at the beginning of main. The invariant 
+for this loop is k < argc - 2, and k is incremented once per loop. This 
+functions in the same way the first for loop of main does, however this time 
+input[k] is used because of the way we created it vs. how the input files 
+were allocated in the argv[] array.
+
+	Included files:
+The program was run with output.txt as the output file and Kennedy.txt and 
+Obama.txt. The output for this program run can be found in the output.txt 
+that is included in the zipped directory. The input files used for this example 
+run of the program are included. The file Doxyfile is also included. It is 
+configured be used as the config file parameter in the command "doxygen 
+Doxyfile" to generate HTML and LaTeX documentation for the program. 
