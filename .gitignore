@@ -1,4 +1,4 @@
-/.metadata/
-/RemoteSystemTempFiles/
+RemoteSystemTempFiles
 #Object files
 *.o
+.metadata
