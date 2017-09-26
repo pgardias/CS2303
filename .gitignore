@@ -1,2 +1,4 @@
 /.metadata/
 /RemoteSystemTempFiles/
+#Object files
+*.o
