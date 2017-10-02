@@ -14,14 +14,15 @@
 
 SortedList S;
 
-
 int main(int argc, char *argv[]) {
+	std::cout << "Starting test program." << std::endl;
 
 	for (int i = 1; i < argc; i++)
 		S.InsertItem(atol(argv[i]));	// insert the arguments into list
 
 	S.printReverseList();
-	std::cout << "The sum of the items in the list is " << S.getSum() << std::endl;
+	std::cout << "The sum of the items in the list is " << S.getSum()
+			<< std::endl;
 
 	return EXIT_SUCCESS;
 }
