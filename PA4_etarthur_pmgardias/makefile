@@ -25,7 +25,7 @@ customer.o: customer.cpp customer.h teller.h
 	g++ $(CFLAGS) -c customer.cpp
 	
 sim.o: sim.cpp sim.h teller.h event.h customer.h
-	g++ $(CFLAGS) -c simulation.cpp
+	g++ $(CFLAGS) -c sim.cpp
 
 event.o: event.cpp event.h
 	g++ $(CFLAGS) -c event.cpp

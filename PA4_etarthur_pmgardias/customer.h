@@ -14,7 +14,7 @@ public:
 		time = t;
 	}
 	Event* add();
-	void getTime();
+	int getTime();
 	void action_single_line();
 	void action_multiple_lines();
 	virtual ~Customer() {

@@ -11,12 +11,16 @@
 
 using namespace std;
 
-const int min_idle_time = 1; // units in sec
-const int max_idle_time = 600; // units in sec
+const int min_idle_time = 1; // Units in seconds
+const int max_idle_time = 600; // Units in seconds
+const int min_transaction_time = 1; // Units in seconds
+const int max_transaction_time = 500; // Units in seconds
 
 int customers, tellers;
 int total_time, total_idle_time, times_idle, total_transaction_time;
+double standard_deviation;
 int* customers_in_line;
+int* time_in_bank;
 float simulation_time, avg_service_time;
 unsigned int seed;
 
@@ -30,6 +34,8 @@ TellerQueue teller_queue;
 TellerQueue* teller_queues;
 EventQueue *event_queue;
 
+//TODO stdev of time spent at bank
+
 int main(int argc, char *argv[]) {
 	//ofstream output;
 	//output.open("output.txt", ios::out);
@@ -39,37 +45,31 @@ int main(int argc, char *argv[]) {
 	simulation_time = atoi(argv[3]); // units in min
 	avg_service_time = atoi(argv[4]);
 
-	if (argc == 6) { // seed is provided
+	if (argc == 6) { // If seed is provided
 		seed = atof(argv[5]);
-	} else { // no seed provided
+	} else { // If no seed is provided
 		seed = time(NULL);
 	}
 	srand(seed);
 
-	////////////////////
-	float arrival_time = simulation_time * rand() / float(RAND_MAX); // random arrival times
-
-	//////////////////////////
-
 	printf("Simulation started with following parameters:\n");
-	printf("Simulation time - %d\n", simulation_time);
+	printf("Simulation time - %d\n", int(simulation_time));
 	printf("Transaction time between %5d - %d\n", 1, 500);
 	printf("Idle time between %5d - %d\n", min_idle_time, max_idle_time);
-	printf("Number of Customers: %5dn", customers);
+	printf("Number of Customers: %5d\n", customers);
 	printf("Number of Tellers: %d\n", tellers);
-	cout << endl << endl << endl << endl << endl;
-
-	sim_single_line(customers, tellers);
-	print();
+	cout << endl << endl << endl;
 
 	cout << "Simulation for one line." << endl << endl;
 
 	sim_single_line(customers, tellers);
 	print(); // print results for single line sim
 
-	total_time = total_idle_time = times_idle = total_transaction_time = 0;
+	// Reset parameters which are being tracked
+	total_time = total_idle_time = times_idle = total_transaction_time =
+			standard_deviation = 0;
 
-	cout << endl << endl << endl;
+	cout << endl << endl;
 	cout << "Simulation for multiple lines." << endl << endl;
 
 	sim_multiple_lines(customers, tellers);
@@ -98,6 +98,7 @@ void sim_single_line(int customers, int tellers) {
 		event_queue->getNext();
 	}
 
+	// Free memory
 	for (int i = 0; i < customers; i++) {
 		delete (all_customers[i]);
 	}
@@ -128,13 +129,15 @@ void sim_multiple_lines(int customers, int tellers) {
 		event_queue->eq.push_back(all_tellers[i]); // Insert element at the end of queue
 	}
 	customers_in_line = new int[tellers];
-	for (int i = 0; i < tellers; i++)
+	for (int i = 0; i < tellers; i++) {
 		customers_in_line[i] = 0;
+	}
 
 	while (!event_queue->eq.empty()) { // Process the event queue
 		event_queue->getNextMultipleLines();
 	}
 
+	// Free memory
 	for (int i = 0; i < customers; i++) {
 		delete (all_customers[i]);
 	}
@@ -147,11 +150,32 @@ void sim_multiple_lines(int customers, int tellers) {
 	delete (all_tellers);
 } // void sim_multiple_lines(int customers, int tellers);
 
+void findStDev() {
+	double deviation[customers];
+	double avg_time = total_time / customers;
+	double total_deviation = 0;
+
+	for (int i = 0; i < customers; i++) {
+		deviation[i] = time_in_bank[i] - avg_time;
+	}
+
+	for (int i = 0; i < customers; i++) {
+		total_deviation += deviation[i];
+	}
+	standard_deviation = total_deviation / customers;
+} // void findStDev();
+
 void print() {
-	printf("Average transaction time %7.2f\n",
-			double(total_transaction_time) / double(customers));
-	printf("Total idle time & times_idle %7d %d\n", total_idle_time,
-			times_idle);
-	printf("Total time & Average waiting time %7d %.2f\n", total_time,
+//findStDev();
+	double avg_transaction_time = double(total_transaction_time)
+			/ double(customers);
+	printf("Average transaction time: %7.2f\n", avg_transaction_time);
+	printf("Total time: %7d\n", total_time);
+	printf("Total idle time: %7d\n", total_idle_time);
+	printf("Times idle: %d\n", times_idle);
+
+	printf("Average time spent in bank: %.2f\n",
 			double(total_time) / double(customers));
+	printf("Standard deviation of time spent at bank: %.2f\n",
+			standard_deviation);
 } // void print();

@@ -9,6 +9,7 @@
 
 using namespace std;
 
+// Abstract class for teller and customer
 class Event {
 public:
 	int lineNumber;
@@ -36,14 +37,6 @@ public:
 	}
 };
 
-/*
- struct cmp {
- bool operator()(Event *a, Event *b) {
- return (a->gettime() > b->gettime());
- }
- };
- */
-
 class EventQueue {
 public:
 	std::list<Event *> eq;
@@ -55,6 +48,12 @@ public:
 	Event* front();
 	void remove();
 	void add(Event *a);
+};
+
+struct compareEvents {
+	bool operator()(Event *a, Event *b) {
+		return (a->getTime() > b->getTime());
+	}
 };
 
 #endif /* EVENT_H_ */
