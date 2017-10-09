@@ -4,6 +4,7 @@
 #define TELLER_H_
 
 #include "event.h"
+#include "eventqueue.h"
 
 class Teller: public Event {
 public:

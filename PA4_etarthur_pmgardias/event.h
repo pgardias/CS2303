@@ -5,14 +5,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <list>
 
 using namespace std;
 
 // Abstract class for teller and customer
 class Event {
 public:
-	int lineNumber;
+	int line;
 	Event() {
 	}
 	virtual Event* add() {
@@ -34,25 +33,6 @@ public:
 		return;
 	}
 	virtual ~Event() {
-	}
-};
-
-class EventQueue {
-public:
-	std::list<Event *> eq;
-	//std::queue<Event *, std::list<Event *>, cmp> thequeue;
-	EventQueue() {
-	}
-	void getNext();
-	void getNextMultipleLines();
-	Event* front();
-	void remove();
-	void add(Event *a);
-};
-
-struct compareEvents {
-	bool operator()(Event *a, Event *b) {
-		return (a->getTime() > b->getTime());
 	}
 };
 

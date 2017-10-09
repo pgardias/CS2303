@@ -3,19 +3,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <list>
 #include "sim.h"
 #include "teller.h"
 #include "event.h"
+#include "eventqueue.h"
 
 using namespace std;
 
-//extern const int min_idle_time; // units in sec
-//extern const int max_idle_time; // units in sec
 extern float simulation_time;
 extern float avg_service_time;
 extern int total_time, total_idle_time, times_idle, total_transaction_time,
 		tellers;
+extern double max_time_until_service;
 extern int* customers_in_line;
+extern list<int> time_in_bank;
 extern TellerQueue teller_queue;
 extern TellerQueue* teller_queues;
 extern EventQueue *event_queue;
@@ -35,12 +37,12 @@ int Teller::getIdle() {
 }
 
 void Teller::action_single_line() {
-	teller_queue.eq.push_back(this); // Add to end of teller queue
+	teller_queue.eq.push(this); // Add to end of teller queue
 }
 
 void Teller::action_multiple_lines() {
-	if (customers_in_line[lineNumber] > 0) { // If there are customers in the teller's line
-		process_transaction(lineNumber);
+	if (customers_in_line[line] > 0) {
+		process_transaction(line);
 	} else { // No customers in the teller's line
 		bool customers_in_other_lines = false;
 		for (int i = 0; i < tellers; i++) {
@@ -79,11 +81,14 @@ void Teller::action_multiple_lines() {
 				}
 			}
 		} else { // No customers in other lines to serve
-			this->add_time(this->getIdle()); // Teller goes idle
-			total_idle_time += this->getIdle(); // Increment idle time counter by time idle
+			float idle_time_back_in_queue = min_idle_time_back_in_queue
+					+ rand() % max_idle_time_back_in_queue;
+			this->add_time(idle_time_back_in_queue); // Teller goes idle
+			total_idle_time += idle_time_back_in_queue; // Increment idle time counter by time idle
+			time_in_bank.push_back(idle_time_back_in_queue);
 			times_idle++; // Increment idle counter
 
-			if (this->getTime() <= simulation_time) {
+			if (this->getTime() <= simulation_time) { // Don't add to event_queue if it would happen past sim time
 				event_queue->add(this);
 			}
 		}
@@ -95,14 +100,19 @@ void Teller::add_time(int transaction_time) { // Add transaction time to total t
 }
 
 void Teller::process_transaction(int line_number) {
+	float service_time = 2 * avg_service_time * rand() / float(RAND_MAX); // Random service times
+
 	Event* temp_event = teller_queues[line_number].front(); // Get next event as a temp event before removing it
 	teller_queues[line_number].remove(); // Remove event from queue
-	customers_in_line[line_number]--; // Decrease num of customers in line by 1
+	customers_in_line[line_number]--; // Decrease number of customers in line by 1
 
-	float service_time = 2 * avg_service_time * rand() / float(RAND_MAX); // Random service times
+	double wait_time = getTime() - temp_event->getTime();
 	add_time(service_time);
 
-	total_time += (getTime() - temp_event->getTime());
+	if (wait_time > max_time_until_service) {
+		max_time_until_service = wait_time;
+	}
+	total_time += getTime() - temp_event->getTime();
 	total_transaction_time += service_time;
 
 	event_queue->add(this);

@@ -1,0 +1,32 @@
+Command line: ./qSim 100 4 60 2.3 5
+
+Output:
+
+Simulation started with following parameters:
+Simulation time: 60 minutes
+Average service time: 2.00 minutes
+Idle time between 1 - 600 seconds
+Number of Customers: 100
+Number of Tellers: 4
+
+
+Simulation for one line
+-----------------------
+Average transaction time: 1.98 minutes
+Total time: 606 minutes
+Total idle time: 53 minutes
+Times idle: 10
+Maximum time taken to get serviced: 7.17 minutes
+Average time spent in bank: 6.06 minutes
+Standard deviation of time spent at bank: 13 seconds (0.22 minutes)
+
+
+Simulation for multiple lines
+-----------------------------
+Average transaction time: 1.88 minutes
+Total time: 288 minutes
+Total idle time: 64 minutes
+Times idle: 50
+Maximum time taken to get serviced: 4.08 minutes
+Average time spent in bank: 2.89 minutes
+Standard deviation of time spent at bank: 47 seconds (0.80 minutes)
